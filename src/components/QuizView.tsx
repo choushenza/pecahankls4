@@ -49,7 +49,10 @@ export const QuizView: React.FC<QuizViewProps> = ({ onBackToHome, onConfetti }) 
   const [hasSubmittedToLeaderboard, setHasSubmittedToLeaderboard] = useState<boolean>(false);
   const [leaderboardList, setLeaderboardList] = useState<LeaderboardEntry[]>([]);
   const [leaderboardSource, setLeaderboardSource] = useState<LeaderboardSource>('local');
-  const [isLeaderboardLoading, setIsLeaderboardLoading] = useState<boolean>(false);
+  // Saat Supabase dikonfigurasi, mulai dalam keadaan memuat supaya teks
+  // "Mode lokal" tidak sempat berkedip sebelum data online selesai diambil.
+  const [isLeaderboardLoading, setIsLeaderboardLoading] =
+    useState<boolean>(isSupabaseConfigured);
   const [leaderboardError, setLeaderboardError] = useState<string | null>(null);
   const [isSavingScore, setIsSavingScore] = useState<boolean>(false);
   const [saveNotice, setSaveNotice] = useState<string | null>(null);
@@ -65,6 +68,14 @@ export const QuizView: React.FC<QuizViewProps> = ({ onBackToHome, onConfetti }) 
   }, [levelFilter]);
 
   const loadLeaderboard = React.useCallback(async () => {
+    if (!isSupabaseConfigured) {
+      setLeaderboardList(getLeaderboard());
+      setLeaderboardSource('local');
+      setLeaderboardError(null);
+      setIsLeaderboardLoading(false);
+      return;
+    }
+
     setIsLeaderboardLoading(true);
     setLeaderboardError(null);
 
@@ -769,15 +780,25 @@ export const QuizView: React.FC<QuizViewProps> = ({ onBackToHome, onConfetti }) 
                 </h4>
                 <p
                   className={`text-[11px] font-bold mt-1 flex items-center gap-1.5 ${
-                    leaderboardSource === 'supabase' ? 'text-emerald-700' : 'text-amber-800'
+                    isLeaderboardLoading && isSupabaseConfigured
+                      ? 'text-sky-700'
+                      : leaderboardSource === 'supabase'
+                      ? 'text-emerald-700'
+                      : 'text-amber-800'
                   }`}
                 >
                   <span
                     className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                      leaderboardSource === 'supabase' ? 'bg-emerald-500' : 'bg-amber-500'
+                      isLeaderboardLoading && isSupabaseConfigured
+                        ? 'bg-sky-500 animate-pulse'
+                        : leaderboardSource === 'supabase'
+                        ? 'bg-emerald-500'
+                        : 'bg-amber-500'
                     }`}
                   />
-                  {leaderboardSource === 'supabase'
+                  {isLeaderboardLoading && isSupabaseConfigured
+                    ? 'Menghubungkan ke Supabase...'
+                    : leaderboardSource === 'supabase'
                     ? 'Online via Supabase — skor tampil untuk semua siswa.'
                     : isSupabaseConfigured
                     ? 'Mode lokal sementara — server belum bisa dihubungi.'

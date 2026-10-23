@@ -26,7 +26,7 @@ Yang perlu diperhatikan saat memakai project bersama:
 3. Tempel isi [`supabase/leaderboard.sql`](./leaderboard.sql), lalu klik **Run**.
 4. Buka **Project Settings → API**, salin:
    - **Project URL**
-   - **anon public key**
+   - **anon public key** (atau **publishable key** `sb_publishable_...`)
 5. Buat file `.env.local` di folder utama proyek (sebelah `package.json`):
 
    ```env
@@ -44,11 +44,26 @@ Aplikasi tetap berjalan. Papan juara otomatis memakai **mode lokal**
 (`localStorage`) dan menampilkan tulisan "Mode lokal — belum terhubung ke Supabase".
 Jadi tidak ada error saat dipakai tanpa internet.
 
+Papan juara sengaja **mulai kosong**: tidak ada data contoh/dummy. Kalau browser
+masih menyimpan entri demo lama (`lb-1` sampai `lb-5`), entri itu otomatis
+dibersihkan saat papan juara dibuka.
+
 ## Saat deploy
 
 Vite membaca env saat **build**. Tambahkan `VITE_SUPABASE_URL` dan
 `VITE_SUPABASE_ANON_KEY` di pengaturan environment hosting (Vercel/Netlify/AI Studio),
 lalu build ulang. Setelah itu papan juara akan online untuk semua pengunjung.
+
+## Reset papan juara (mulai kosong lagi)
+
+Jalankan di **SQL Editor**:
+
+```sql
+truncate table public.pecahan_leaderboard;
+```
+
+Ini menghapus **semua** skor. Cocok dipakai saat tahun ajaran baru atau ingin
+memulai papan juara dari kosong.
 
 ## Struktur data
 

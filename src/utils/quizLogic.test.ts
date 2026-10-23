@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { evaluateQuiz, DEFAULT_LEADERBOARD } from './quizLogic';
+import { evaluateQuiz } from './quizLogic';
 import { QUIZ_50_QUESTIONS } from './quizData';
 
 test('QUIZ_50_QUESTIONS has exactly 50 well-formed questions', () => {
@@ -58,11 +58,4 @@ test('evaluateQuiz handles partial answers and unanswered questions', () => {
   assert.equal(result.unansweredCount, 48);
   assert.equal(result.percentage, 2);
   assert.equal(result.stars, 1);
-});
-
-test('DEFAULT_LEADERBOARD has initial entries sorted by score', () => {
-  assert.ok(DEFAULT_LEADERBOARD.length >= 5);
-  for (let i = 0; i < DEFAULT_LEADERBOARD.length - 1; i++) {
-    assert.ok(DEFAULT_LEADERBOARD[i].score >= DEFAULT_LEADERBOARD[i + 1].score);
-  }
 });

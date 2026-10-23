@@ -27,59 +27,6 @@ export interface QuizResultSummary {
   feedback: string;
 }
 
-export const DEFAULT_LEADERBOARD: LeaderboardEntry[] = [
-  {
-    id: 'lb-1',
-    name: 'Fajar Maulana (Dukuhwaru)',
-    score: 50,
-    total: 50,
-    percentage: 100,
-    avatar: '🦊',
-    date: 'Hari ini',
-    badgeTitle: 'Juara Akbar Pecahan',
-  },
-  {
-    id: 'lb-2',
-    name: 'Nabila Zahra (Saung Pintar)',
-    score: 48,
-    total: 50,
-    percentage: 96,
-    avatar: '🐰',
-    date: 'Kemarin',
-    badgeTitle: 'Bintang Pecahan Cerdas',
-  },
-  {
-    id: 'lb-3',
-    name: 'Rizky Pratama (Kelas 4B)',
-    score: 45,
-    total: 50,
-    percentage: 90,
-    avatar: '🦁',
-    date: '2 hari lalu',
-    badgeTitle: 'Master Desimal & Persen',
-  },
-  {
-    id: 'lb-4',
-    name: 'Dewi Anggraini (Dukuhwaru)',
-    score: 42,
-    total: 50,
-    percentage: 84,
-    avatar: '🐼',
-    date: '3 hari lalu',
-    badgeTitle: 'Koki Martabak Handal',
-  },
-  {
-    id: 'lb-5',
-    name: 'Bima Aditya (Kelas 4A)',
-    score: 40,
-    total: 50,
-    percentage: 80,
-    avatar: '🐯',
-    date: '3 hari lalu',
-    badgeTitle: 'Pahlawan Pecahan Ceria',
-  },
-];
-
 /**
  * Calculate quiz grade and positive feedback
  */
@@ -140,22 +87,40 @@ export function evaluateQuiz(
 }
 
 /**
- * Load leaderboard from localStorage or fallback
+ * ID data contoh lama. Dibersihkan otomatis supaya papan juara mulai kosong.
+ */
+const DEMO_LEADERBOARD_IDS = new Set(['lb-1', 'lb-2', 'lb-3', 'lb-4', 'lb-5']);
+
+/**
+ * Load leaderboard from localStorage.
+ * Papan juara sengaja dimulai kosong (tanpa data contoh).
  */
 export function getLeaderboard(): LeaderboardEntry[] {
-  if (typeof window === 'undefined') return DEFAULT_LEADERBOARD;
+  if (typeof window === 'undefined') return [];
+
   try {
     const saved = localStorage.getItem('saung_pintar_leaderboard');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed.sort((a, b) => b.score - a.score);
-      }
+    if (!saved) return [];
+
+    const parsed = JSON.parse(saved);
+    if (!Array.isArray(parsed)) return [];
+
+    const entries = parsed.filter(
+      (entry): entry is LeaderboardEntry =>
+        Boolean(entry) &&
+        typeof entry.id === 'string' &&
+        !DEMO_LEADERBOARD_IDS.has(entry.id)
+    );
+
+    // Bersihkan data contoh lama yang mungkin sudah terlanjur tersimpan.
+    if (entries.length !== parsed.length) {
+      localStorage.setItem('saung_pintar_leaderboard', JSON.stringify(entries));
     }
+
+    return entries.sort((a, b) => b.score - a.score);
   } catch {
-    // Ignore error
+    return [];
   }
-  return DEFAULT_LEADERBOARD;
 }
 
 /**
