@@ -1,0 +1,6 @@
+{
+  "name": "Petualangan Pecahan Saung Pintar",
+  "description": "Media pembelajaran matematika interaktif materi pecahan kelas 4 SD Saung Pintar Dukuhwaru dengan pendekatan visual martabak, pizza, dan cokelat.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
