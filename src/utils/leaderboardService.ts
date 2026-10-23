@@ -62,7 +62,12 @@ export function getFriendlyLeaderboardError(message: string): string {
     return 'Jaringan tidak tersambung. Periksa koneksi internet lalu coba lagi.';
   }
 
-  if (lower.includes('relation') && lower.includes('does not exist')) {
+  if (
+    (lower.includes('relation') && lower.includes('does not exist')) ||
+    lower.includes('could not find the table') ||
+    lower.includes('schema cache') ||
+    lower.includes('pgrst205')
+  ) {
     return 'Tabel papan juara belum ada di Supabase. Jalankan file supabase/leaderboard.sql terlebih dahulu.';
   }
 

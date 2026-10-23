@@ -73,11 +73,14 @@ export const QuizView: React.FC<QuizViewProps> = ({ onBackToHome, onConfetti }) 
       setLeaderboardList(entries);
       setLeaderboardSource(source);
     } catch (error) {
+      const detail =
+        error instanceof Error ? error.message.replace(/\.$/, '') : '';
+
       setLeaderboardList(getLeaderboard());
       setLeaderboardSource('local');
       setLeaderboardError(
-        error instanceof Error
-          ? `Papan juara online belum bisa dimuat (${error.message}). Sementara menampilkan skor di perangkat ini.`
+        detail
+          ? `Papan juara online belum bisa dimuat (${detail}). Sementara menampilkan skor di perangkat ini.`
           : 'Papan juara online belum bisa dimuat. Sementara menampilkan skor di perangkat ini.'
       );
     } finally {
